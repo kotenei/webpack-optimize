@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "outDir": "lib",
+    "module": "esnext",
+    "target": "esnext",
+    "jsx": "react",
+    "lib": ["es2017", "dom", "es6", "es7"],
+    "baseUrl": "./",
+    "paths": {
+      "kui-react": ["src"]
+    }
+  },
+  "include": ["src/**/*.tsx", "src/**/*.ts"],
+  "exclude": ["node_modules"]
+}

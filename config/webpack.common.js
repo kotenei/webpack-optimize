@@ -12,8 +12,10 @@ module.exports = {
     path: path.resolve(__dirname, "../dist"),
   },
   resolve: {
-    modules: [path.resolve(__dirname, '../node_modules')],
+    // modules: [path.resolve(__dirname, '../node_modules')],
     extensions: [".ts", ".tsx", ".js", ".jsx", ".sass"],
+    mainFields: ['main'],
+    symlinks: false,
   },
   module: {
     rules: [

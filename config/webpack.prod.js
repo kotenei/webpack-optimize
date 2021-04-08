@@ -56,16 +56,23 @@ module.exports = merge(commonConfig, {
         extractComments: true,
       }),
     ],
-    splitChunks: {
-      cacheGroups: {
-        styles: {
-          name: "styles",
-          test: /\.css$/,
-          chunks: "all",
-          enforce: true,
-        },
-      },
-    },
+    // splitChunks: {
+    //   chunks: 'all',
+    //   minSize: 0,
+    //   minChunks: 1,
+    //   maxAsyncRequests: 5,
+    //   maxInitialRequests: 3,
+    //   automaticNameDelimiter: '-',
+    //   name: true,
+    //   cacheGroups: {
+    //     styles: {
+    //       name: "styles",
+    //       test: /\.css$/,
+    //       chunks: "all",
+    //       enforce: true,
+    //     },
+    //   },
+    // },
   },
 
   plugins: [

@@ -25,24 +25,7 @@ module.exports = merge(commonConfig, {
       {
         test: /\.scss$/,
         exclude: /(node_modules)/,
-        use: [
-          "style-loader",
-          "css-loader",
-          {
-            loader: "postcss-loader",
-            options: {
-              ident: "postcss",
-              importLoaders: 1, // 0 => no loaders (default); 1 => postcss-loader; 2 => postcss-loader, sass-loader
-              plugins: () => [require("autoprefixer")()],
-            },
-          },
-          {
-            loader: "sass-loader",
-            options: {
-              implementation: require("sass"),
-            },
-          },
-        ],
+        use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"],
       },
     ],
   },

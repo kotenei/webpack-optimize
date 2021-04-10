@@ -1,4 +1,4 @@
-## Webpack 优化
+## Webpack 优化配置
 
 ### 1. 提高打包速度
 
@@ -16,10 +16,10 @@ module: {
       exclude: /node_modules/,
       use: [
         {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
             cacheDirectory: true,
-            include: path.resolve(__dirname, "../src"),
+            include: path.resolve(__dirname, '../src'),
           },
         },
       ],
@@ -40,7 +40,7 @@ module: {
       exclude: /node_modules/,
       use: [
         {
-          loader: "thread-loader",
+          loader: 'thread-loader',
           options: {
             // 产生的 worker 的数量，默认是 cpu 的核心数
             workers: 2,
@@ -50,7 +50,7 @@ module: {
             workerParallelJobs: 50,
 
             // 额外的 node.js 参数
-            workerNodeArgs: ["--max-old-space-size", "1024"],
+            workerNodeArgs: ['--max-old-space-size', '1024'],
 
             // 闲置时定时删除 worker 进程
             // 默认为 500ms
@@ -64,11 +64,11 @@ module: {
 
             // 池(pool)的名称
             // 可以修改名称来创建其余选项都一样的池(pool)
-            name: "my-pool",
+            name: 'my-pool',
           },
         },
         {
-          loader: "babel-loader",
+          loader: 'babel-loader',
         },
       ],
     },
@@ -84,37 +84,37 @@ module: {
 
 ```js
 module.exports = {
-  mode: "production",
+  mode: 'production',
   entry: {
     // 第三方库
-    vendor: ["react", "react-dom", "react-router-dom"],
+    vendor: ['react', 'react-dom', 'react-router-dom'],
   },
   output: {
-    path: path.resolve(__dirname, "../dll"),
-    filename: "[name].dll.js",
+    path: path.resolve(__dirname, '../dll'),
+    filename: '[name].dll.js',
     /*
      存放相关的dll文件的全局变量名称，防止全局变量冲突。
     */
-    library: "[name]_library",
+    library: '[name]_library',
   },
 
   plugins: [
     // 使用插件 DllPlugin
     new webpack.DllPlugin({
       // manifest文件中请求的上下文，默认为该webpack文件上下文。
-      context: path.resolve(__dirname, ".."),
+      context: path.resolve(__dirname, '..'),
       /**
        * path
        * 定义 manifest 文件生成的位置
        * [name]的部分由entry的名字替换
        */
-      path: path.join(__dirname, "../dll", "[name]-manifest.json"),
+      path: path.join(__dirname, '../dll', '[name]-manifest.json'),
       /**
        * name
        * static bundle 输出到那个全局变量上
        * 和 output.library 一样即可。
        */
-      name: "[name]_library",
+      name: '[name]_library',
     }),
   ],
 };
@@ -130,8 +130,8 @@ module.exports = {
     // 使用 DllReferencePlugin 插件
     new webpack.DllReferencePlugin({
       // 打包时读取 mainfest.json 文件，判断第三方包是否在dll文件中，有则不打包。
-      manifest: require("../dll/vendor-manifest.json"),
-      context: path.resolve(__dirname, ".."),
+      manifest: require('../dll/vendor-manifest.json'),
+      context: path.resolve(__dirname, '..'),
     }),
   ],
 };
@@ -159,8 +159,8 @@ module.exports = {
 module.exports = {
   resolve: {
     // modules: [path.resolve(__dirname, "../node_modules")],
-    extensions: [".ts", ".tsx", ".js", ".jsx", ".sass"],
-    mainFields: ["main"],
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.sass'],
+    mainFields: ['main'],
     // noParse: /jquery/,
     symlinks: false,
   },
@@ -169,47 +169,61 @@ module.exports = {
 
 ### 2.减少打包体积
 
-### 2.1 开启 Tree Shaking
+#### 2.1 开启 Tree Shaking
 
 设置 `mode` 为 `production` 时， webpack 会删除无用的代码
 
 ```js
 module.exports = {
-  mode: "production",
+  mode: 'production',
 };
 ```
 
-#### 2.2 配置 externals，使用 CDN
+#### 2.2 开启 Scope Hoisting
+
+`Scope Hoisting` 可以让 Webpack 打包出来的代码文件更小、运行的更快， 它又译作 "作用域提升"
+
+```js
+module.exports = {
+  plugins: [new webpack.optimize.ModuleConcatenationPlugin()],
+};
+```
+
+#### 2.3 配置 externals，使用 CDN
 
 一般来说，常用的第三方库都会发布在 CDN 上，我们可以使用 cdn 的方式加载资源，这样就不用对资源进行打包，减少打包后的体积。使用 `externals` 配置可以忽略第三方库的打包
 
 ```js
 module.exports = {
+  // key是我们 import 的包名，value 是CDN为我们提供的全局变量名
   externals: {
-    react: "React",
-    "react-dom": "ReactDOM",
-    "react-redux": "ReactRedux",
-    redux: "Redux",
-    axios: "axios",
-    history: "History",
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    'react-redux': 'ReactRedux',
+    'react-router-dom': 'ReactRouterDOM',
+    redux: 'Redux',
+    axios: 'axios',
+    history: 'History',
   },
 };
 ```
 
-<!-- #### 2.3  动态导入和按需加载 
+#### 2.4 动态导入和按需加载
+
 使用 '@loadable/component' 动态加载
 
-``` js
-import loadable from '@loadable/component'
+```js
+import loadable from '@loadable/component';
 
 // 组件按需加载(Code Spliting)
 const Layout = loadable(() => import('./components/layout'));
-``` -->
+```
 
-#### 2.3 terser-webpack-plugin 压缩代码
-``` js
+#### 2.5 terser-webpack-plugin 压缩代码
+
+```js
 module.exports = {
-   optimization: {
+  optimization: {
     minimize: true,
     minimizer: [
       new TerserWebpackPlugin({
@@ -217,8 +231,7 @@ module.exports = {
         parallel: true, // 开启多进程
         extractComments: true,
       }),
-    ]
+    ],
   },
 };
 ```
-
